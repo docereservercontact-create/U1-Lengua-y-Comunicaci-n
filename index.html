@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen Oficial: Funciones de la Lengua (30 Preguntas)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2pdf.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="w-full max-w-4xl bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden my-8">
+        
+        <!-- PANTALLA 1: REGISTRO DE NOMBRE -->
+        <div id="screen-register" class="p-8 md:p-12 text-center">
+            <div class="inline-block p-3 bg-emerald-500/10 text-emerald-400 rounded-2xl mb-4">
+                <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-bold mb-2">Simulador Oficial: Funciones de la Lengua</h1>
+            <p class="text-slate-400 mb-6 max-w-lg mx-auto">Evaluación certificada de <strong class="text-emerald-400">30 reactivos</strong> con límite de tiempo de <strong class="text-emerald-400">35 minutos</strong>. <br><strong class="text-amber-400">Aviso importante:</strong> Sistema anti-fraude activo. Si cambias de pestaña o sales de la ventana, el examen se anulará de inmediato.</p>
+            
+            <form id="form-register" class="max-w-md mx-auto space-y-4 text-left">
+                <div>
+                    <label for="fullName" class="block text-sm font-medium text-slate-300 mb-1">Nombre Completo del Alumno</label>
+                    <input type="text" id="fullName" required placeholder="Ej. Roberto Carlos Mendoza Ruiz" 
+                        class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-100 placeholder-slate-500">
+                </div>
+                <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-semibold rounded-xl shadow-lg transition duration-200 text-white cursor-pointer">
+                    Iniciar Examen Certificado
+                </button>
+            </form>
+        </div>
+
+        <!-- PANTALLA 2: EXAMEN EN CURSO -->
+        <div id="screen-exam" class="hidden flex flex-col h-full">
+            <div class="bg-slate-900 px-6 py-4 border-b border-slate-700 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <span id="candidate-display" class="text-sm font-medium text-emerald-400 block"></span>
+                    <span class="text-xs text-slate-400">Modo Seguro Antifraude Activo 🔒</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="timer-box" class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-xl text-sm font-mono text-amber-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span id="timer-display">35:00</span>
+                    </div>
+                    <span id="question-progress" class="text-sm font-semibold bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">Pregunta 1 de 30</span>
+                </div>
+            </div>
+
+            <!-- Contenedor de Preguntas -->
+            <div class="p-6 md:p-8 space-y-6">
+                <div id="question-container" class="space-y-4">
+                    <!-- Inyección dinámica de pregunta -->
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-slate-700">
+                    <button id="btn-prev" onclick="prevQuestion()" class="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                        Anterior
+                    </button>
+                    <div id="quick-dots" class="hidden md:flex space-x-1 max-w-xs overflow-x-auto py-1">
+                        <!-- Navegador rápido por puntos -->
+                    </div>
+                    <button id="btn-next" onclick="nextQuestion()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-semibold transition text-white cursor-pointer">
+                        Siguiente
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 3: BLOQUEO POR ANTI-PLAGIO -->
+        <div id="screen-blocked" class="hidden p-10 text-center space-y-6">
+            <div class="inline-block p-4 bg-red-500/10 text-red-400 rounded-full">
+                <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-red-400">¡Examen Anulado por Anti-Fraude!</h2>
+            <p id="blocked-reason" class="text-slate-300 max-w-md mx-auto">
+                Has abandonado la pestaña, cambiado de ventana o perdido el foco del navegador. Por políticas de seguridad e integridad del examen, tu intento ha sido invalidado automáticamente.
+            </p>
+            <button onclick="location.reload()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 font-semibold rounded-xl text-sm transition cursor-pointer">
+                Intentar Nuevamente
+            </button>
+        </div>
+
+        <!-- PANTALLA 4: RESULTADOS -->
+        <div id="screen-results" class="hidden p-6 md:p-10 space-y-6">
+            <!-- Contenedor optimizado para exportar a PDF -->
+            <div id="pdf-content" class="bg-slate-800 space-y-6 p-2">
+                <div class="text-center pb-4 border-b border-slate-700">
+                    <span class="text-xs uppercase tracking-wider text-emerald-400 font-bold block mb-1">Reporte Oficial de Evaluación</span>
+                    <h2 id="res-name" class="text-2xl font-bold text-white mb-2"></h2>
+                    <div class="inline-flex items-center px-4 py-2 bg-slate-900 border border-slate-700 rounded-2xl text-lg font-semibold">
+                        Calificación Final: <span id="res-score" class="ml-2 text-emerald-400"></span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Desglose Detallado de los 30 Reactivos</h3>
+                    <div id="results-list" class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
+                        <!-- Inyección de resultados detallados -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción final -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-700">
+                <button onclick="downloadPDF()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-xl text-sm transition text-white flex items-center justify-center space-x-2 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span>Descargar Resultados en PDF</span>
+                </button>
+                <button onclick="location.reload()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 font-semibold rounded-xl text-sm transition text-white cursor-pointer">
+                    Nuevo Intento
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Base de datos completa con 30 preguntas de examen sobre las funciones de la lengua
+        const questions = [
+            // Función Emotiva / Expresiva (1-5)
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función emotiva de la lengua.",
+                options: {
+                    a: "El agua hierve a una temperatura de cien grados centígrados al nivel del mar.",
+                    b: "¡Qué alegría tan inmensa me da verte en este día tan especial!",
+                    c: "El acento ortográfico se coloca en la sílaba tónica según las normas gramaticales.",
+                    d: "Por favor, mantén silencio absoluto durante la lectura de la tesis."
+                },
+                correct: "b"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función emotiva de la lengua.",
+                options: {
+                    a: "El volumen del cubo se calcula multiplicando el área de la base por su altura.",
+                    b: "Atiende la llamada telefónica que está sonando en la recepción.",
+                    c: "¡Maldita sea la hora en que confié en tus falsas promesas!",
+                    d: "El sol es una estrella de tipo espectral G2V ubicada en el centro del sistema."
+                },
+                correct: "c"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función emotiva de la lengua.",
+                options: {
+                    a: "¡Ay, mi Dios, cuánto dolor siento en el alma por tu partida!",
+                    b: "La fotosíntesis es el proceso químico mediante el cual las plantas producen oxígeno.",
+                    c: "Abre la ventana para que circule el aire fresco de la mañana.",
+                    d: "El diccionario define 'empatía' como la capacidad de percibir lo que otro siente."
+                },
+                correct: "a"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función emotiva de la lengua.",
+                options: {
+                    a: "El cloruro de sodio está compuesto por un átomo de sodio y uno de cloro.",
+                    b: "¡No lo puedo creer, ganamos el primer lugar del torneo nacional!",
+                    c: "Los adverbios de tiempo indican el momento en que se realiza la acción verbal.",
+                    d: "Entréguese el documento firmado en la ventanilla número cuatro."
+                },
+                correct: "b"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función emotiva de la lengua.",
+                options: {
+                    a: "La capital de la República Mexicana es la Ciudad de México.",
+                    b: "Verifica que todas las conexiones eléctricas estén debidamente aisladas.",
+                    c: "¡Siento una profunda tristeza al ver este lugar tan desolado!",
+                    d: "El morfema derivativo modifica el significado básico del lexema."
+                },
+                correct: "c"
+            },
+
+            // Función Metalingüística (6-10)
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función metalingüística de la lengua.",
+                options: {
+                    a: "El río serpenteaba silencioso vistiendo un traje de plata brillante.",
+                    b: "Vota por la opción que garantice un mejor futuro para nuestra comunidad.",
+                    c: "En español, los verbos terminados en '-ger' y '-gir' se escriben generalmente con 'g'.",
+                    d: "Hola, buenas tardes, ¿me escucha bien a través de este dispositivo?"
+                },
+                correct: "c"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función metalingüística de la lengua.",
+                options: {
+                    a: "El núcleo del sujeto en una oración siempre es un sustantivo o un pronombre.",
+                    b: "Cierra la puerta con seguro al salir de la oficina principal.",
+                    c: "¡Feliz aniversario de bodas, queridos papás!",
+                    d: "El cometa Halley orbita alrededor del sol cada setenta y seis años."
+                },
+                correct: "a"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función metalingüística de la lengua.",
+                options: {
+                    a: "Las palabras agudas llevan tilde cuando terminan en consonante n, s o vocal.",
+                    b: "¡Qué paisaje tan majestuoso e imponente se divisa desde la cima!",
+                    c: "Compre sus boletos anticipados con un treinta por ciento de descuento.",
+                    d: "La temperatura descendió bruscamente durante la madrugada."
+                },
+                correct: "a"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función metalingüística de la lengua.",
+                options: {
+                    a: "El término 'fonema' se define como la unidad sonora mínima sin significado en sí misma.",
+                    b: "Los datos aportados por los testigos confirman la trayectoria del vehículo.",
+                    c: "Disculpe, ¿podría indicarme dónde se encuentra la biblioteca central?",
+                    d: "La noche se vistió de luto y las estrellas lloraron en silencio."
+                },
+                correct: "a"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función metalingüística de la lengua.",
+                options: {
+                    a: "Por favor, apaga las luces antes de abandonar el laboratorio.",
+                    b: "Una oración bimembre es aquella que se puede dividir en sujeto y predicado.",
+                    c: "¡Qué gran sorpresa me has dado con esta maravillosa noticia!",
+                    d: "El informe financiero refleja un incremento notable en las utilidades anuales."
+                },
+                correct: "b"
+            },
+
+            // Función Fática / De Contacto (11-15)
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función fática de la lengua.",
+                options: {
+                    a: "¿Me escuchas bien? Probando, uno, dos, tres.",
+                    b: "La República Mexicana limita al norte con los Estados Unidos de América.",
+                    c: "¡Qué susto tan terrible me llevé cuando sonó la alarma de emergencias!",
+                    d: "El crepúsculo doraba las cumbres de la cordillera lejana."
+                },
+                correct: "a"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función fática de la lengua.",
+                options: {
+                    a: "Buenos días a todos los presentes en esta mesa directiva, ¿me escuchan al fondo?",
+                    b: "La fotosíntesis es el proceso químico mediante el cual las plantas producen oxígeno.",
+                    c: "Tus ojos son dos luceros que iluminan mi sendero oscuro.",
+                    d: "Presenta tu identificación oficial en la entrada principal."
+                },
+                correct: "a"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función fática de la lengua.",
+                options: {
+                    a: "El sistema nervioso central está compuesto por el encéfalo y la médula espinal.",
+                    b: "Hola, ¿qué tal?, ¿sí me copias la señal de radio?",
+                    c: "Los adjetivos calificativos señalan cualidades o características del sustantivo.",
+                    d: "¡Prohibido el paso a personas no autorizadas en esta zona!"
+                },
+                correct: "b"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función fática de la lengua.",
+                options: {
+                    a: "¡Alto ahí!, nadie puede cruzar la línea fronteriza sin pasaporte.",
+                    b: "El oro es un metal precioso altamente maleable y resistente a la corrosión.",
+                    c: "Ajá, sí, te entiendo perfectamente, continúa con el reporte.",
+                    d: "El sonido de la flauta atravesaba la quietud del bosque."
+                },
+                correct: "c"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función fática de la lengua.",
+                options: {
+                    a: "Disculpe la molestia, ¿me permite pasar un momento por favor?",
+                    b: "¡Hola, hola!, ¿hay alguien conectado en la plataforma?",
+                    c: "La derivada de una función representa la pendiente de la curva en un punto.",
+                    d: "El respeto al derecho ajeno es la paz."
+                },
+                correct: "b"
+            },
+
+            // Función Referencial / Informativa (16-20)
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función referencial de la lengua.",
+                options: {
+                    a: "¡Ojalá que encuentres la paz que tanto has estado buscando!",
+                    b: "El sismo de magnitud 7.1 tuvo su epicentro en el estado de Puebla.",
+                    c: "Las palabras agudas llevan tilde cuando terminan en n, s o vocal.",
+                    d: "Dime con quién andas y te diré quién eres."
+                },
+                correct: "b"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función referencial de la lengua.",
+                options: {
+                    a: "¡Compra hoy mismo tus boletos con un cincuenta por ciento de descuento!",
+                    b: "El oxígeno es un elemento químico gaseoso representado por el símbolo O.",
+                    c: "¡Qué paisaje tan majestuoso e imponente se divisa desde la cima!",
+                    d: "La oración anterior cumple una estructura sintáctica de orden sujeto-verbo-objeto."
+                },
+                correct: "b"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función referencial de la lengua.",
+                options: {
+                    a: "El 20 de noviembre se conmemora el aniversario de la Revolución Mexicana.",
+                    b: "¡Por favor, atiende las indicaciones del instructor inmediatamente!",
+                    c: "Me duele muchísimo la cabeza desde la tarde de ayer.",
+                    d: "El amor es fuego que arde sin que se vea."
+                },
+                correct: "a"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función referencial de la lengua.",
+                options: {
+                    a: "¿Podrías hacerme el favor de prestarme tu calculadora científica?",
+                    b: "La Organización Mundial de la Salud emitió una alerta sanitaria preventiva.",
+                    c: "¡Bravo, excelente participación en el certamen artístico!",
+                    d: "El verbo es el núcleo del predicado en la oración."
+                },
+                correct: "b"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función referencial de la lengua.",
+                options: {
+                    a: "La superficie total de los océanos cubre aproximadamente el setenta por ciento del planeta.",
+                    b: "¡Hola! ¿Cómo has estado después de tanto tiempo?",
+                    c: "¡Prohibido estacionarse frente a la rampa de emergencia!",
+                    d: "El viento soplaba con furia agitando las ramas de los árboles."
+                },
+                correct: "a"
+            },
+
+            // Función Poética / Estética (21-25)
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función poética de la lengua.",
+                options: {
+                    a: "Los datos aportados por los testigos confirman la trayectoria del vehículo.",
+                    b: "El término 'fonema' se define como la unidad sonora mínima sin significado en sí misma.",
+                    c: "La noche se vistió de luto y las estrellas lloraron en silencio.",
+                    d: "Disculpe, ¿podría indicarme dónde se encuentra la biblioteca central?"
+                },
+                correct: "c"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función poética de la lengua.",
+                options: {
+                    a: "El agua hierve a 100 grados centígrados a presión atmosférica normal.",
+                    b: "El viento de la tarde deshojó los sueños en el jardín del tiempo.",
+                    c: "El sujeto tácito es aquel que no aparece escrito en la oración.",
+                    d: "Por favor, firme el contrato en el espacio indicado."
+                },
+                correct: "b"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función poética de la lengua.",
+                options: {
+                    a: "Tus labios eran pétalos de rosa marchita bajo la lluvia de otoño.",
+                    b: "La exportación de petróleo crudo disminuyó un cinco por ciento este trimestre.",
+                    c: "Para calcular el área de un triángulo se multiplica base por altura sobre dos.",
+                    d: "¿Me escuchas claramente a través del altavoz?"
+                },
+                correct: "a"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función poética de la lengua.",
+                options: {
+                    a: "La célula eucariota posee un núcleo definido delimitado por una membrana.",
+                    b: "El silencio de la madrugada guardaba los secretos de los amantes.",
+                    c: "Las reglas ortográficas facilitan la correcta escritura del idioma.",
+                    d: "Apague sus dispositivos móviles antes de ingresar a la sala."
+                },
+                correct: "b"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función poética de la lengua.",
+                options: {
+                    a: "El sol es una esfera de gas incandescente situada en nuestro sistema.",
+                    b: "El tiempo teje hilos de plata sobre los recuerdos del ayer.",
+                    c: "El artículo es una categoría gramatical que acompaña al sustantivo.",
+                    d: "Regístrese en el portal web utilizando su correo institucional."
+                },
+                correct: "b"
+            },
+
+            // Función Apelativa / Conativa (26-30)
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función apelativa de la lengua.",
+                options: {
+                    a: "Recicla tus residuos sólidos para proteger el medio ambiente de tu ciudad.",
+                    b: "El termómetro marcó una temperatura máxima de veintiocho grados.",
+                    c: "¡Ay, mi Dios, cuánto dolor siento en el alma por tu partida!",
+                    d: "La poesía romántica predominó durante la primera mitad del siglo XIX."
+                },
+                correct: "a"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función apelativa de la lengua.",
+                options: {
+                    a: "El volumen del cono equivale a un tercio del área de la base por su altura.",
+                    b: "¡Vota por la propuesta que garantiza mayor seguridad y empleo!",
+                    c: "El río Amazonas es el más caudaloso y largo del planeta.",
+                    d: "Mis pensamientos vuelan hacia ti en cada instante del día."
+                },
+                correct: "b"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función apelativa de la lengua.",
+                options: {
+                    a: "Cierra la puerta con llave y apaga el interruptor principal antes de dormir.",
+                    b: "La fotosíntesis convierte la energía lumínica en energía química.",
+                    c: "¡Qué hermosa melodía interpreta la orquesta sinfónica esta noche!",
+                    d: "El prefijo 'sub-' denota inferioridad o debajo de."
+                },
+                correct: "a"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función apelativa de la lengua.",
+                options: {
+                    a: "La República Mexicana cuenta con treinta y dos entidades federativas.",
+                    b: "Por favor, mantén tu carril y respeta los límites de velocidad establecidos.",
+                    c: "¡Cuánto daría por regresar el tiempo y abrazarte de nuevo!",
+                    d: "Las palabras esdrújulas siempre llevan tilde en la antepenúltima sílaba."
+                },
+                correct: "b"
+            },
+            {
+                question: "Selecciona la opción que presenta un enunciado con predominio de la función apelativa de la lengua.",
+                options: {
+                    a: "El agua potable es un recurso natural indispensable para la vida humana.",
+                    b: "¡Lee detenidamente cada cláusula antes de estampar tu firma en el documento!",
+                    c: "Las estrellas titilan en el firmamento como diamantes ocultos.",
+                    d: "El núcleo del predicado es siempre un verbo conjugado."
+                },
+                correct: "b"
+            }
+        ];
+
+        let state = {
+            fullName: "",
+            currentIndex: 0,
+            answers: Array(questions.length).fill(null),
+            examStarted: false,
+            examFinished: false,
+            cheatDetected: false,
+            timeLeft: 35 * 60, // 35 minutos
+            timerInterval: null
+        };
+
+        // Referencias del DOM
+        const formRegister = document.getElementById('form-register');
+        const screenRegister = document.getElementById('screen-register');
+        const screenExam = document.getElementById('screen-exam');
+        const screenBlocked = document.getElementById('screen-blocked');
+        const screenResults = document.getElementById('screen-results');
+        const candidateDisplay = document.getElementById('candidate-display');
+        const questionProgress = document.getElementById('question-progress');
+        const questionContainer = document.getElementById('question-container');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const timerDisplay = document.getElementById('timer-display');
+        const quickDots = document.getElementById('quick-dots');
+
+        // Registro de usuario y inicio de examen
+        formRegister.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nameInput = document.getElementById('fullName').value.trim();
+            if(nameInput.length < 3) {
+                alert("Por favor ingresa tu nombre completo válido.");
+                return;
+            }
+            state.fullName = nameInput;
+            state.examStarted = true;
+            candidateDisplay.textContent = `Evaluado: ${state.fullName}`;
+            
+            screenRegister.classList.add('hidden');
+            screenExam.classList.remove('hidden');
+            
+            renderQuestion();
+            renderQuickDots();
+            startTimer();
+            initAntiCheat();
+        });
+
+        // Temporizador de 35 minutos
+        function startTimer() {
+            state.timerInterval = setInterval(() => {
+                if(state.examFinished || state.cheatDetected) {
+                    clearInterval(state.timerInterval);
+                    return;
+                }
+                state.timeLeft--;
+                const minutes = Math.floor(state.timeLeft / 60);
+                const seconds = state.timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if(state.timeLeft <= 0) {
+                    clearInterval(state.timerInterval);
+                    alert("El tiempo reglamentario ha concluido. El examen se enviará automáticamente.");
+                    finishExam();
+                }
+            }, 1000);
+        }
+
+        // Sistema Anti-Plagio / Focus Tracking estricto
+        function initAntiCheat() {
+            const handleViolation = (reason) => {
+                if(!state.examStarted || state.examFinished || state.cheatDetected) return;
+                state.cheatDetected = true;
+                if(state.timerInterval) clearInterval(state.timerInterval);
+                
+                document.getElementById('blocked-reason').textContent = `Motivo: ${reason}. Por políticas de seguridad e integridad institucional, tu intento ha sido anulado automáticamente.`;
+                
+                screenExam.classList.add('hidden');
+                screenBlocked.classList.remove('hidden');
+            };
+
+            document.addEventListener('visibilitychange', () => {
+                if(document.hidden) {
+                    handleViolation("Cambiaste de pestaña o minimizaste el navegador");
+                }
+            });
+
+            window.addEventListener('blur', () => {
+                handleViolation("Saliste de la ventana del examen o perdiste el foco del navegador");
+            });
+        }
+
+        // Renderizar puntos de navegación rápida
+        function renderQuickDots() {
+            let html = '';
+            for(let i = 0; i < questions.length; i++) {
+                const isAnswered = state.answers[i] !== null;
+                const isCurrent = state.currentIndex === i;
+                let bgClass = "bg-slate-700 text-slate-300";
+                if(isCurrent) bgClass = "bg-emerald-600 text-white font-bold ring-2 ring-emerald-400";
+                else if(isAnswered) bgClass = "bg-slate-600 text-emerald-300 border border-emerald-500/50";
+
+                html += `<button onclick="goToQuestion(${i})" class="w-7 h-7 rounded-lg text-xs flex items-center justify-center transition cursor-pointer ${bgClass}">${i+1}</button>`;
+            }
+            quickDots.innerHTML = html;
+        }
+
+        window.goToQuestion = function(index) {
+            state.currentIndex = index;
+            renderQuestion();
+            renderQuickDots();
+        }
+
+        // Renderizar pregunta actual
+        function renderQuestion() {
+            const qIndex = state.currentIndex;
+            const q = questions[qIndex];
+            questionProgress.textContent = `Pregunta ${qIndex + 1} de ${questions.length}`;
+            
+            btnPrev.disabled = qIndex === 0;
+            if (qIndex === questions.length - 1) {
+                btnNext.textContent = "Finalizar Examen";
+                btnNext.className = "px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-semibold transition text-white cursor-pointer";
+            } else {
+                btnNext.textContent = "Siguiente";
+                btnNext.className = "px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-semibold transition text-white cursor-pointer";
+            }
+
+            let html = `
+                <h3 class="text-lg md:text-xl font-medium text-slate-100 mb-6 leading-relaxed">
+                    ${qIndex + 1}. ${q.question}
+                </h3>
+                <div class="space-y-3">
+            `;
+
+            const letters = ['a', 'b', 'c', 'd'];
+            letters.forEach(letter => {
+                const isSelected = state.answers[qIndex] === letter;
+                html += `
+                    <label class="flex items-start p-4 bg-slate-900 border ${isSelected ? 'border-emerald-500 bg-emerald-500/10' : 'border-slate-700 hover:border-slate-600'} rounded-xl cursor-pointer transition">
+                        <input type="radio" name="option" value="${letter}" ${isSelected ? 'checked' : ''} onclick="selectOption('${letter}')" class="mt-1 text-emerald-500 focus:ring-emerald-500 bg-slate-800 border-slate-600 cursor-pointer">
+                        <span class="ml-3 text-slate-200 text-sm md:text-base"><strong class="text-emerald-400 mr-2">${letter.toUpperCase()})</strong> ${q.options[letter]}</span>
+                    </label>
+                `;
+            });
+
+            html += `</div>`;
+            questionContainer.innerHTML = html;
+            renderQuickDots();
+        }
+
+        // Seleccionar opción
+        window.selectOption = function(letter) {
+            state.answers[state.currentIndex] = letter;
+            renderQuickDots();
+        }
+
+        // Navegación siguiente
+        window.nextQuestion = function() {
+            if(!state.answers[state.currentIndex]) {
+                alert("Por favor selecciona una opción antes de continuar.");
+                return;
+            }
+
+            if(state.currentIndex < questions.length - 1) {
+                state.currentIndex++;
+                renderQuestion();
+            } else {
+                if(confirm("¿Estás seguro de finalizar y enviar tus respuestas del examen?")) {
+                    finishExam();
+                }
+            }
+        }
+
+        // Navegación anterior
+        window.prevQuestion = function() {
+            if(state.currentIndex > 0) {
+                state.currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        // Finalizar y calificar examen
+        function finishExam() {
+            state.examFinished = true;
+            if(state.timerInterval) clearInterval(state.timerInterval);
+            
+            screenExam.classList.add('hidden');
+            screenResults.classList.remove('hidden');
+
+            let score = 0;
+            let resultsHtml = '';
+
+            questions.forEach((q, index) => {
+                const userAns = state.answers[index] || '-';
+                const isCorrect = userAns === q.correct;
+                if(isCorrect) score++;
+
+                resultsHtml += `
+                    <div class="p-4 bg-slate-900 border ${isCorrect ? 'border-emerald-500/50' : 'border-red-500/50'} rounded-xl space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-bold ${isCorrect ? 'text-emerald-400' : 'text-red-400'}">
+                                ${isCorrect ? '✔ CORRECTA' : '✖ INCORRECTA'}
+                            </span>
+                            <span class="text-xs text-slate-400">Pregunta ${index + 1} de 30</span>
+                        </div>
+                        <p class="text-sm font-medium text-slate-200">${q.question}</p>
+                        <div class="text-xs space-y-1 pt-1 border-t border-slate-800 text-slate-300">
+                            <p><strong>Tu respuesta:</strong> <span class="${isCorrect ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}">${userAns !== '-' ? userAns.toUpperCase() + ' - ' + q.options[userAns] : 'Sin responder'}</span></p>
+                            ${!isCorrect ? `<p><strong>Respuesta correcta:</strong> <span class="text-emerald-400 font-bold">${q.correct.toUpperCase()} - ${q.options[q.correct]}</span></p>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            const finalPercentage = ((score / questions.length) * 10).toFixed(1);
+            document.getElementById('res-name').textContent = state.fullName;
+            document.getElementById('res-score').textContent = `${score} / ${questions.length} (${finalPercentage} / 10)`;
+            document.getElementById('results-list').innerHTML = resultsHtml;
+        }
+
+        // Función para descargar PDF usando html2pdf.js
+        window.downloadPDF = function() {
+            const element = document.getElementById('pdf-content');
+            const cleanName = state.fullName.replace(/[^a-zA-Z0-9]/g, '_');
+            const opt = {
+                margin:       10,
+                filename:     `Examen_Funciones_Lengua_${cleanName}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#1e293b' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().from(element).set(opt).save();
+        }
+    </script>
+</body>
+</html>
